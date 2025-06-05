@@ -1,26 +1,30 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.schemas.user import UserOut, UserUpdate
-from app.deps import get_db, get_current_user
 from app.models.user import User
+from app.deps import get_db, get_current_user
 from app.core.security import hash_password
 
-router = APIRouter()
+router = APIRouter(prefix="/users", tags=["Users"])
 
 @router.get("/me", response_model=UserOut)
-def read_me(current_user: User = Depends(get_current_user)):
+def read_current_user(current_user: User = Depends(get_current_user)):
     return current_user
 
 @router.put("/me", response_model=UserOut)
-def update_me(data: UserUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    if data.name is not None:
-        current_user.name = data.name
-    if data.email is not None:
-        current_user.email = data.email
-    if data.password is not None:
-        current_user.hashed_password = hash_password(data.password)
-    if data.role is not None:
-        current_user.role = data.role
+def update_current_user(
+    update_data: UserUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    update_fields = update_data.dict(exclude_unset=True)
+
+    if "password" in update_fields:
+        update_fields["hashed_password"] = hash_password(update_fields.pop("password"))
+
+    for field, value in update_fields.items():
+        setattr(current_user, field, value)
+
     db.commit()
     db.refresh(current_user)
     return current_user
