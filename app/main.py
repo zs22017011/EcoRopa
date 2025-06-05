@@ -17,3 +17,7 @@ app.add_middleware(
 
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 app.include_router(users.router, prefix="/users", tags=["Users"])
+app.include_router(items.router, prefix="/items", tags=["Items"])
+app.include_router(geolocation.router, prefix="/recycle-points", tags=["Recycle Points"])
+app.include_router(credits.router, prefix="/credits", tags=["Credits"])
+app.include_router(messages.router, prefix="/messages", tags=["Messages"])
