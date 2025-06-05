@@ -12,11 +12,11 @@ class Item(Base):
     __tablename__ = "items"
     id = Column(Integer, primary_key=True, index=True)
     owner_id = Column(Integer, ForeignKey("users.id"))
-    title = Column(String(128))
+    title = Column(String(130))
     description = Column(String(512))
     size = Column(String(16))
     type = Column(String(64))
-    image_url = Column(String(256))
+    image_url = Column(String(258))
     status = Column(Enum(ItemStatus), default=ItemStatus.available)
     latitude = Column(Float)
     longitude = Column(Float)
